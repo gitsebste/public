@@ -65,7 +65,7 @@ runs:
     - name: Query open alerts
       shell: bash
       run: |
-        python query_github_code_scanning_alerts.py
+        python ./actions/sec/gate/query_github_code_scanning_alerts.py
         echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
@@ -78,7 +78,7 @@ runs:
     - name: Evaluate results
       shell: bash
       run: |
-        python evaluate_results.py
+        python ./actions/sec/gate/evaluate_results.py
       env:
         QUERY_RESULT: ${{ env.QUERY_RESULT }}
         GATING_POLICY: ${{ inputs.policy_json }}
