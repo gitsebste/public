@@ -63,6 +63,10 @@ runs:
         POLICY_JSON: ${{ inputs.policy_json }}
         POLICY_FILE: ${{ inputs.policy_file }}
     - name: Query open alerts
+      shell: bash
+      run: |
+        python query_github_code_scanning_alerts.py
+        echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         REPO_OWNER: ${{ inputs.repo_owner }}
@@ -70,10 +74,11 @@ runs:
         TARGET_REF: ${{ inputs.target_ref }}
         SEVERITY_LEVELS: ${{ inputs.severity_levels }}
         MAX_ALERTS: ${{ inputs.max_alerts }}
-      run: |
-        python query_github_code_scanning_alerts.py
-        echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
+
     - name: Evaluate results
+      shell: bash
+      run: |
+        python evaluate_results.py
       env:
         QUERY_RESULT: ${{ env.QUERY_RESULT }}
         GATING_POLICY: ${{ inputs.policy_json }}
@@ -81,5 +86,4 @@ runs:
         QUIET_MODE: ${{ inputs.quiet_mode }}
         USE_REFERENCE_BRANCH: ${{ inputs.use_reference_branch }}
         REFERENCE_ALERTS: ${{ inputs.reference_alerts }}
-      run: |
-        python evaluate_results.py
+
