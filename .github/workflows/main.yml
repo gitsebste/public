@@ -38,8 +38,7 @@ jobs:
       uses: ./actions/sec/gate
       id: hello
       with:
-          # github_token: ${{ secrets.token }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          github_token: ${{ secrets.token }}
           repo_owner: gitsebste
           repo_name: public
           target_ref: refs/heads/main
