@@ -48,7 +48,7 @@ def main():
 
     query_result = query_github_code_scanning_alerts(github_token, owner, repo_name, target_ref, severity_levels, max_alerts)
     with open('query_result.json', 'w') as f:
-        json.dump(output, f)
+        json.dump(query_result, f)
 
 if __name__ == "__main__":
     main()
