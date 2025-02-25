@@ -102,7 +102,7 @@ def main():
     gating_active = os.environ.get('GATING_ACTIVE').lower() == 'true'
     quiet_mode = os.environ.get('QUIET_MODE').lower() == 'true'
     use_reference_branch = os.environ.get('USE_REFERENCE_BRANCH').lower() == 'true'
-    reference_alerts = json.loads(os.environ.get('REFERENCE_ALERTS'))
+    reference_alerts = json.loads(os.environ.get('REFERENCE_ALERTS')) if use_reference_branch else None
 
     evaluate_results(api_call_result, gating_policy, gating_active, quiet_mode, use_reference_branch, reference_alerts)
 
