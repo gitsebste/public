@@ -56,7 +56,7 @@ runs:
     - name: Publish CodeQL gating policy to file
       shell: bash
       run: |
-        jq '' <<< "$POLICY_JSON" > "$POLICY_FILE"
+        python -c "import json; print(json.dumps(json.loads('$POLICY_JSON'), indent=4))" > "$POLICY_FILE"
         echo "Gating policy:"
         cat "$POLICY_FILE"
       env:
