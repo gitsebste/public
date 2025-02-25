@@ -54,14 +54,14 @@ runs:
     # - name: Execute Script
     #   run: python main.py ${{ inputs.num }}
     - name: Publish CodeQL gating policy to file
-        shell: bash
-        run: |
-          jq '' <<< "$POLICY_JSON" > "$POLICY_FILE"
-          echo "Gating policy:"
-          cat "$POLICY_FILE"
-        env:
-          POLICY_JSON: ${{ inputs.policy_json }}
-          POLICY_FILE: ${{ inputs.policy_file }}
+      shell: bash
+      run: |
+        jq '' <<< "$POLICY_JSON" > "$POLICY_FILE"
+        echo "Gating policy:"
+        cat "$POLICY_FILE"
+      env:
+        POLICY_JSON: ${{ inputs.policy_json }}
+        POLICY_FILE: ${{ inputs.policy_file }}
     - name: Query open alerts
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
