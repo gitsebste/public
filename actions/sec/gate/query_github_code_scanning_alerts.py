@@ -11,7 +11,7 @@ def query_github_code_scanning_alerts(
 
     print(f'Evaluating vulnerabilities for branch "{target_ref}".')
 
-    api_call_url = f'{GITHUB_API_URL}/repos/{owner}/{repo_name}/code-scanning/alerts?ref={target_ref}&state=open'
+    api_call_url = f'https://api.github.com/repos/{owner}/{repo_name}/code-scanning/alerts?ref={target_ref}&state=open'
 
     if max_alerts is not None:      
         print(f'Pulling up to {max_alerts} findings ordered by severity')
