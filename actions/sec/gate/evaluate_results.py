@@ -1,7 +1,7 @@
 import os
 import json
 
-def evaluate_results(api_call_result: str, 
+def evaluate_results(api_call_result: dict, 
                     gating_policy: dict, 
                     gating_active: bool, 
                     quiet_mode: bool,
@@ -97,7 +97,8 @@ def evaluate_results(api_call_result: str,
             print(f'{WARNING_PREFIX} vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
 def main():
-    api_call_result = os.environ.get('QUERY_RESULT')
+    # api_call_result = os.environ.get('QUERY_RESULT')
+    api_call_result = json.loads(os.environ.get('QUERY_RESULT'))
     gating_policy = json.loads(os.environ.get('GATING_POLICY'))
     gating_active = os.environ.get('GATING_ACTIVE').lower() == 'true'
     quiet_mode = os.environ.get('QUIET_MODE').lower() == 'true'
