@@ -69,7 +69,7 @@ runs:
         python ./actions/sec/gate/query_github_code_scanning_alerts.py
         echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
       env:
-        GITHUB_TOKEN: ${{ inputs.token }}
+        GITHUB_TOKEN: ${{ inputs.github_token }}
         REPO_OWNER: ${{ inputs.repo_owner }}
         REPO_NAME: ${{ inputs.repo_name }}
         TARGET_REF: ${{ inputs.target_ref }}
