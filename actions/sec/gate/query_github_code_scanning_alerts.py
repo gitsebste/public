@@ -43,7 +43,7 @@ def main():
     repo_name = os.environ.get('REPO_NAME')
     target_ref = os.environ.get('TARGET_REF')
     severity_levels = os.environ.get('SEVERITY_LEVELS')
-    max_alerts = int(os.environ.get('MAX_ALERRTS'))
+    max_alerts = int(os.environ.get('MAX_ALERTS'))
 
     query_result = query_github_code_scanning_alerts(github_token, owner, repo_name, target_ref, severity_levels, max_alerts)
     with open('query_result.json', 'w') as f:
