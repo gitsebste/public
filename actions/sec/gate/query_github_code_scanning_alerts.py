@@ -1,5 +1,6 @@
 import os
 import json
+import requests
 
 def query_github_code_scanning_alerts(
         github_token: str,
