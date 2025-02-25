@@ -63,7 +63,6 @@ runs:
           POLICY_JSON: ${{ inputs.policy_json }}
           POLICY_FILE: ${{ inputs.policy_file }}
     - name: Query open alerts
-      if: ${{ always() }}
       env:
         GITHUB_TOKEN: ${{ inputs.token }}
         REPO_OWNER: ${{ inputs.repo_owner }}
@@ -75,7 +74,6 @@ runs:
         python query_github_code_scanning_alerts.py
         echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
     - name: Evaluate results
-      if: ${{ always() }}
       env:
         QUERY_RESULT: ${{ env.QUERY_RESULT }}
         GATING_POLICY: ${{ inputs.policy_json }}
