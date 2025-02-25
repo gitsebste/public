@@ -40,5 +40,5 @@ jobs:
       with:
           github_token: ${{ secrets.token }}
           repo_owner: gitsebste
-          repository: public
+          repo_name: public
           target_ref: refs/heads/main
