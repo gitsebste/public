@@ -16,28 +16,29 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [ 'csharp']
+        language: [ 'python']
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v2
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v1
+      uses: github/codeql-action/init@v3
       with:
         languages: ${{ matrix.language }}
 
-    - name: Autobuild
-      uses: github/codeql-action/autobuild@v1
+    # - name: Autobuild
+    #   uses: github/codeql-action/autobuild@v1
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v1
+      uses: github/codeql-action/analyze@v3
 
     - name: Gate
+      if: ${{ always() }}
       uses: ./actions/sec/gate
       id: hello
       with:
           github_token: ${{ secrets.token }}
-          repo_owner: LUXMED
-          repository: kt-gate
+          repo_owner: gitsebste
+          repo_name: public
           target_ref: refs/heads/main
