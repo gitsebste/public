@@ -38,6 +38,6 @@ jobs:
       id: hello
       with:
           github_token: ${{ secrets.token }}
-          repo_owner: LUXMED
-          repository: kt-gate
+          repo_owner: gitsebste
+          repository: public
           target_ref: refs/heads/main
