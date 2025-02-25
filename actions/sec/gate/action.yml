@@ -65,6 +65,7 @@ runs:
     - name: Query open alerts
       shell: bash
       run: |
+        pip install requests
         python ./actions/sec/gate/query_github_code_scanning_alerts.py
         echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
       env:
