@@ -30,7 +30,7 @@ def query_github_code_scanning_alerts(
     api_call_result = requests.get(api_call_url, headers=headers)
 
     if api_call_result.status_code != 200:
-        print(f'{ERROR_PREFIX}Failed to make API call to GitHub. See response text below.')
+        print('Failed to make API call to GitHub. See response text below.')
         print(api_call_result.text)
         exit(1)
     else:
