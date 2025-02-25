@@ -1,0 +1,85 @@
+name: CodeQL Security Gate
+description: Gate CodeQL results based on defined security policies
+inputs:
+  github_token:
+    description: GitHub PAT with read access to code scanning alerts
+    required: true
+  repo_owner:
+    required: true
+    description: Owner of the repository
+    default: LUXMED
+  repo_name:
+    description: Name of the repository
+    required: true
+  target_ref:
+    description: Target branch or PR reference
+    required: true
+  severity_levels:
+    description: Severity levels to filter
+    default: critical,high,medium,low
+  max_alerts:
+    description: Maximum number of alerts to retrieve
+    default: 100
+  policy_json:
+    description: JSON formatted gating policy
+    default: '{"critical":{"blocking":true,"grace_period":0},"high":{"blocking":true,"grace_period":0},"medium":{"blocking":true,"grace_period":30},"low":{"blocking":true,"grace_period":90},"warning":{"blocking":false,"grace_period":0},"note":{"blocking":false,"grace_period":0},"error":{"blocking":true,"grace_period":0}}'
+  gating_active:
+    description: Enable or disable gating of alerts
+    default: false
+  use_reference_branch:
+    description: Use reference branch for additional grace period evaluation
+    default: false
+  quiet_mode:
+    description: Use quiet mode
+    default: false
+  reference_branch:
+    description: Reference branch name
+    default: develop
+  reference_alerts:
+    description: Reference alerts
+  policy_file:
+    description: Path to save the gating policy JSON
+    default: codeql_gating_policy.json
+
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Install Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.10'
+    # - name: Install Dependencies
+    #   run: pip install -r requirements.txt
+    # - name: Execute Script
+    #   run: python main.py ${{ inputs.num }}
+    - name: Publish CodeQL gating policy to file
+        shell: bash
+        run: |
+          jq '' <<< "$POLICY_JSON" > "$POLICY_FILE"
+          echo "Gating policy:"
+          cat "$POLICY_FILE"
+        env:
+          POLICY_JSON: ${{ inputs.policy_json }}
+          POLICY_FILE: ${{ inputs.policy_file }}
+    - name: Query open alerts
+      env:
+        GITHUB_TOKEN: ${{ inputs.token }}
+        REPO_OWNER: ${{ inputs.repo_owner }}
+        REPO_NAME: ${{ inputs.repo_name }}
+        TARGET_REF: ${{ inputs.target_ref }}
+        SEVERITY_LEVELS: ${{ inputs.severity_levels }}
+        MAX_ALERTS: ${{ inputs.max_alerts }}
+      run: |
+        python query_github_code_scanning_alerts.py
+        echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
+    - name: Evaluate results
+      env:
+        QUERY_RESULT: ${{ env.QUERY_RESULT }}
+        GATING_POLICY: ${{ inputs.policy_json }}
+        GATING_ACTIVE: ${{ inputs.gating_active }}
+        QUIET_MODE: ${{ inputs.quiet_mode }}
+        USE_REFERENCE_BRANCH: ${{ inputs.use_reference_branch }}
+        REFERENCE_ALERTS: ${{ inputs.reference_alerts }}
+      run: |
+        python evaluate_results.py
