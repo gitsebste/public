@@ -11,6 +11,7 @@ def evaluate_results(api_call_result: dict,
                     use_reference_branch: bool,
                     reference_alerts: dict):
     print('\nEvaluating results for the security findings...')
+    fail_pipeline = False
 
     if len(api_call_result) == 0:
         print('No vulnerabilities found!')
@@ -83,8 +84,6 @@ def evaluate_results(api_call_result: dict,
         print(f'Vulnerabilities within grace period found: {vulnerabilities_within_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
     if vulnerabilities_out_of_grace_period != {}:
-        if gating_active:
-            fail_pipeline = False # Flag to fail pipeline after results are published
         for severity in vulnerabilities_out_of_grace_period:
             if gating_policy[severity]['blocking'] in (True, 'True'): # Both variants for simple compatibility with json from ADO object
                 print(f'Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
@@ -98,6 +97,9 @@ def evaluate_results(api_call_result: dict,
             exit(2)
         else:
             print(f'Vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
+    if fail_pipeline and gating_active:
+      print('Policy-prohibited vulnerabilities were found')
+      exit(302)
 
 def main():
     # api_call_result = os.environ.get('QUERY_RESULT')
