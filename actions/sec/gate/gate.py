@@ -70,7 +70,7 @@ def evaluate_results(api_call_result: dict,
                 vulnerabilities_within_grace_period[severity] += 1
             except KeyError:
                 vulnerabilities_within_grace_period[severity] = 1
-            print_if(' '.join(
+            print_if(' '.join([
               f'Vulnerability with "{severity}" severity within grace period found!',
               f'End date is {grace_period_end_date} ({(grace_period_end_date - date.today()).days} days left).',
               'See details below or in "Security -> Code scanning"']), not quiet_mode)
