@@ -1,4 +1,5 @@
 import os
+import datetime
 import json
 
 def evaluate_results(api_call_result: dict, 
@@ -33,7 +34,7 @@ def evaluate_results(api_call_result: dict,
         try:
             grace_period_days = gating_policy[severity]['grace_period']
         except KeyError:
-            print(f'{ERROR_PREFIX}Gating policy must be specified for all severities requested for scan')
+            print(f'Gating policy must be specified for all severities requested for scan')
             exit(5)
 
         # Calculate date of grace period 
@@ -73,7 +74,7 @@ def evaluate_results(api_call_result: dict,
             except KeyError:
                 vulnerabilities_out_of_grace_period[severity] = 1
             if not quiet_mode:
-                print(f'{ERROR_PREFIX}Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"')
+                print(f'Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"')
                 print(json.dumps(vulnerability, sort_keys=True, indent=4))
 
     if vulnerabilities_within_grace_period != {}:  
@@ -84,7 +85,7 @@ def evaluate_results(api_call_result: dict,
             fail_pipeline = False # Flag to fail pipeline after results are published
         for severity in vulnerabilities_out_of_grace_period:
             if gating_policy[severity]['blocking'] in (True, 'True'): # Both variants for simple compatibility with json from ADO object
-                print(f'{ERROR_PREFIX}Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
+                print(f'Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
                         f'{vulnerabilities_out_of_grace_period[severity]} {severity} vulnerabilities out of grace period found.',
                         'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
                 fail_pipeline = True
