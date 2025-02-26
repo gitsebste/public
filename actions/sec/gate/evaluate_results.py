@@ -19,7 +19,7 @@ def evaluate_results(api_call_result: dict,
     # If no gating policy is specified, just publish vulnerabilities list with a warning
     if gating_policy is None:
         print('Gating policy is not specified, just publishing findings')
-        print(f'{WARNING_PREFIX}Vulnerabilities found: {len(api_call_result)}. See details below or in "Security -> Code scanning"')
+        print(f'Vulnerabilities found: {len(api_call_result)}. See details below or in "Security -> Code scanning"')
         if quiet_mode:
             print('Results are suppressed by quiet mode')
         else:
@@ -65,7 +65,7 @@ def evaluate_results(api_call_result: dict,
                 vulnerabilities_within_grace_period[severity] = 1
             if not quiet_mode:
                 days_left = (grace_period_end_date - date.today()).days
-                print(f'{WARNING_PREFIX}Vulnerability with "{severity}" severity within grace period found!',
+                print(f'Vulnerability with "{severity}" severity within grace period found!',
                         f'End date is {grace_period_end_date} ({days_left} days left).',
                         'See details below or in "Security -> Code scanning"', sep=' ')
                 print(json.dumps(vulnerability, sort_keys=True, indent=4))
@@ -80,7 +80,7 @@ def evaluate_results(api_call_result: dict,
                 print(json.dumps(vulnerability, sort_keys=True, indent=4))
 
     if vulnerabilities_within_grace_period != {}:  
-        print(f'{WARNING_PREFIX} vulnerabilities within grace period found: {vulnerabilities_within_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
+        print(f'Vulnerabilities within grace period found: {vulnerabilities_within_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
     if vulnerabilities_out_of_grace_period != {}:
         if gating_active:
@@ -92,12 +92,12 @@ def evaluate_results(api_call_result: dict,
                         'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
                 fail_pipeline = True
             else:
-                print(f'{WARNING_PREFIX}{vulnerabilities_out_of_grace_period[severity]} "{severity}" vulnerabilities out of grace period found.',
+                print(f'{vulnerabilities_out_of_grace_period[severity]} "{severity}" vulnerabilities out of grace period found.',
                         'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
         if gating_active and fail_pipeline:
             exit(2)
         else:
-            print(f'{WARNING_PREFIX} vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
+            print(f'Vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
 def main():
     # api_call_result = os.environ.get('QUERY_RESULT')
