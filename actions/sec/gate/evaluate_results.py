@@ -93,11 +93,9 @@ def evaluate_results(api_call_result: dict,
             else:
                 print(f'{vulnerabilities_out_of_grace_period[severity]} "{severity}" vulnerabilities out of grace period found.',
                         'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
-        if gating_active and fail_pipeline:
-            exit(2)
         else:
             print(f'Vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
-    if fail_pipeline and gating_active:
+    if gating_active and fail_pipeline:
       print('Policy-prohibited vulnerabilities were found')
       exit(302)
 
