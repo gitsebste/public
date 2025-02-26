@@ -53,15 +53,23 @@ runs:
     #   run: pip install -r requirements.txt
     # - name: Execute Script
     #   run: python main.py ${{ inputs.num }}
-    - name: Publish CodeQL gating policy to file
+    
+    # - name: Publish CodeQL gating policy to file
+    #   shell: bash
+    #   run: |
+    #     python -c "import json; print(json.dumps(json.loads('$POLICY_JSON'), indent=4))" > "$POLICY_FILE"
+    #     echo "Gating policy:"
+    #     cat "$POLICY_FILE"
+    #   env:
+    #     POLICY_JSON: ${{ inputs.policy_json }}
+    #     POLICY_FILE: ${{ inputs.policy_file }}
+
+    - name: Show CodeQL gating policy
       shell: bash
       run: |
-        python -c "import json; print(json.dumps(json.loads('$POLICY_JSON'), indent=4))" > "$POLICY_FILE"
-        echo "Gating policy:"
-        cat "$POLICY_FILE"
+        python -c "import json; print(json.dumps(json.loads('$POLICY_JSON'), indent=4))"
       env:
         POLICY_JSON: ${{ inputs.policy_json }}
-        POLICY_FILE: ${{ inputs.policy_file }}
     - name: Query open alerts
       shell: bash
       run: |
