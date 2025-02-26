@@ -201,11 +201,14 @@ def evaluate_main():
 
     evaluate_results(api_call_result, gating_policy, gating_active, quiet_mode, use_reference_branch, reference_alerts)
 
+def function2name(function):
+  return str(function).split()[1]
+
 if __name__ == "__main__":
     mains = {'query': query_main, 'evaluate': evaluate_main}
     main = get_env_var('RUN')
     if main not in mains:
         print(f'{main} should be one of {",".join(mains.keys())}.')
         exit(127)
-    print(f'Executing {mains[main]}')
+    print(f'Executing {function2name(mains[main])}')
     mains[main]()
