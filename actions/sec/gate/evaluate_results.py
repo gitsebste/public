@@ -1,6 +1,7 @@
 import os
 from datetime import datetime
 from datetime import timedelta
+from datetime import date
 import json
 
 def evaluate_results(api_call_result: dict, 
