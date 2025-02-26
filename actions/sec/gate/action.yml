@@ -22,7 +22,7 @@ inputs:
     default: 100
   policy_json:
     description: JSON formatted gating policy
-    default: '{"critical":{"blocking":true,"grace_period":0},"high":{"blocking":true,"grace_period":0},"medium":{"blocking":true,"grace_period":30},"low":{"blocking":true,"grace_period":90},"warning":{"blocking":false,"grace_period":0},"note":{"blocking":false,"grace_period":0},"error":{"blocking":true,"grace_period":0}}'
+    default: '{"critical":{"blocking":true,"grace_period":-1},"high":{"blocking":true,"grace_period":-1},"medium":{"blocking":true,"grace_period":-1},"low":{"blocking":true,"grace_period":-1},"warning":{"blocking":false,"grace_period":-1},"note":{"blocking":false,"grace_period":-1},"error":{"blocking":true,"grace_period":-1}}'
   gating_active:
     description: Enable or disable gating of alerts
     default: false
