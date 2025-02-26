@@ -1,5 +1,5 @@
 import os
-import datetime
+from datetime import datetime
 import json
 
 def evaluate_results(api_call_result: dict, 
