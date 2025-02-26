@@ -10,9 +10,7 @@ def str2bool(string: str):
 
 def print_if(msg: str, condition: bool):
   if condition:
-    print('#'*80)
     print(msg)
-    print('#'*80)
 
 def evaluate_results(api_call_result: dict, 
                     gating_policy: dict, 
@@ -66,10 +64,7 @@ def evaluate_results(api_call_result: dict,
 
         # If vulnerability is in grace period
         if date.today() <= grace_period_end_date:
-            try:
-                vulnerabilities_within_grace_period[severity] += 1
-            except KeyError:
-                vulnerabilities_within_grace_period[severity] = 1
+            vulnerabilities_within_grace_period[severity] = vulnerabilities_within_grace_period.get(severity, 0) + 1
             print_if(' '.join([
               f'Vulnerability with "{severity}" severity within grace period found!',
               f'End date is {grace_period_end_date} ({(grace_period_end_date - date.today()).days} days left).',
@@ -77,10 +72,7 @@ def evaluate_results(api_call_result: dict,
             print_if(json.dumps(vulnerability, sort_keys=True, indent=4), not quiet_mode)
         # If vulnerability is out of grace period
         else:
-            try:
-                vulnerabilities_out_of_grace_period[severity] += 1
-            except KeyError:
-                vulnerabilities_out_of_grace_period[severity] = 1
+            vulnerabilities_out_of_grace_period[severity] = vulnerabilities_out_of_grace_period.get(severity, 0) + 1
             print_if(f'Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"', not quiet_mode)
             print_if(json.dumps(vulnerability, sort_keys=True, indent=4), not quiet_mode)
 
