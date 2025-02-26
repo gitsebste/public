@@ -5,6 +5,14 @@ from datetime import datetime
 from datetime import timedelta
 from datetime import date
 
+def str2bool(string: str):
+  return str(string).lower() == 'true'
+
+def print_if(msg: str, condition: bool):
+  if condition:
+    print('#'*80)
+    print(msg)
+    print('#'*80)
 
 def evaluate_results(api_call_result: dict, 
                     gating_policy: dict, 
@@ -23,10 +31,8 @@ def evaluate_results(api_call_result: dict,
     if gating_policy is None:
         print('Gating policy is not specified, just publishing findings')
         print(f'Vulnerabilities found: {len(api_call_result)}. See details below or in "Security -> Code scanning"')
-        if quiet_mode:
-            print('Results are suppressed by quiet mode')
-        else:
-            print(json.dumps(api_call_result, sort_keys=True, indent=4))
+        msg = 'Results are suppressed by quiet mode' if quiet_mode else json.dumps(api_call_result, sort_keys=True, indent=4)
+        print(msg)
         return
 
     # If gating policy is specified, analyze vulnerabilities per severity taking into account grace periods
@@ -47,14 +53,12 @@ def evaluate_results(api_call_result: dict,
 
         if use_reference_branch:
             try:
-                if not quiet_mode:
-                    print('Checking for vulnerability in reference branch')
+                print_if('Checking for vulnerability in reference branch', not quiet_mode)
                 datetime_first_seen_reference = datetime.strptime(reference_alerts[vulnerability['number']][:10], r'%Y-%m-%d')
                 # Only use reference branch's "firstSeenDate" if it's older then target ref's
                 if datetime_first_seen_reference < datetime_first_seen:
                     datetime_first_seen = datetime_first_seen_reference
-                if not quiet_mode:
-                    print('Vulnerability found in reference branch')
+                print_if('Vulnerability found in reference branch', not quiet_mode)
             except KeyError:
                 print('Vulnerability not found in reference branch. Proceeding evaluating grace period for given ref.')
 
@@ -66,28 +70,26 @@ def evaluate_results(api_call_result: dict,
                 vulnerabilities_within_grace_period[severity] += 1
             except KeyError:
                 vulnerabilities_within_grace_period[severity] = 1
-            if not quiet_mode:
-                days_left = (grace_period_end_date - date.today()).days
-                print(f'Vulnerability with "{severity}" severity within grace period found!',
-                        f'End date is {grace_period_end_date} ({days_left} days left).',
-                        'See details below or in "Security -> Code scanning"', sep=' ')
-                print(json.dumps(vulnerability, sort_keys=True, indent=4))
+            print_if(' '.join(
+              f'Vulnerability with "{severity}" severity within grace period found!',
+              f'End date is {grace_period_end_date} ({(grace_period_end_date - date.today()).days} days left).',
+              'See details below or in "Security -> Code scanning"']), not quiet_mode)
+            print_if(json.dumps(vulnerability, sort_keys=True, indent=4), not quiet_mode)
         # If vulnerability is out of grace period
         else:
             try:
                 vulnerabilities_out_of_grace_period[severity] += 1
             except KeyError:
                 vulnerabilities_out_of_grace_period[severity] = 1
-            if not quiet_mode:
-                print(f'Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"')
-                print(json.dumps(vulnerability, sort_keys=True, indent=4))
+            print_if(f'Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"', not quiet_mode)
+            print_if(json.dumps(vulnerability, sort_keys=True, indent=4), not quiet_mode)
 
     if vulnerabilities_within_grace_period != {}:  
         print(f'Vulnerabilities within grace period found: {vulnerabilities_within_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
     if vulnerabilities_out_of_grace_period != {}:
         for severity in vulnerabilities_out_of_grace_period:
-            if gating_policy[severity]['blocking'] in (True, 'True'): # Both variants for simple compatibility with json from ADO object
+            if str2bool(gating_policy[severity]['blocking']):
                 print(f'Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
                         f'{vulnerabilities_out_of_grace_period[severity]} {severity} vulnerabilities out of grace period found.',
                         'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
@@ -100,39 +102,6 @@ def evaluate_results(api_call_result: dict,
     if gating_active and fail_pipeline:
       print('Policy-prohibited vulnerabilities were found')
       exit(302)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 def query_github_code_scanning_alerts(
         github_token: str,
@@ -172,9 +141,6 @@ def query_github_code_scanning_alerts(
 
 def get_env_var(string: str):
   return os.environ.get(string)
-
-def str2bool(string: str):
-  return string.lower() == 'true'
 
 def json2dict(string: str):
   return json.loads(string)
