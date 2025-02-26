@@ -205,7 +205,7 @@ if __name__ == "__main__":
     mains = {'query': query_main, 'evaluate': evaluate_main}
     main = get_env_var('RUN')
     if main not in mains:
-        print(f"'{main}' should be one of {",".join(mains.keys())}.")
+        print(f'{main} should be one of {",".join(mains.keys())}.')
         exit(127)
     print(f'Executing {mains[main]}')
     mains[main]()
