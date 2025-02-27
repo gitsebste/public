@@ -40,7 +40,7 @@ def evaluate_results(api_call_result: dict,
     for vulnerability in api_call_result:
         # Retrieve grace period according to the finding's severity
         severity = vulnerability['rule']['security_severity_level']
-        if severity in gating_policy and 'grace_period' in gating_policy[severity]
+        if severity in gating_policy and 'grace_period' in gating_policy[severity]:
             grace_period_days = gating_policy[severity]['grace_period']
         else:
             print(f'Gating policy must be specified for all severities requested for scan')
