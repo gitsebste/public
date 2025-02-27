@@ -74,9 +74,10 @@ runs:
       shell: bash
       run: |
         pip install requests
-        python ./actions/sec/gate/query_github_code_scanning_alerts.py
+        python ./actions/sec/gate/gate.py
         echo "QUERY_RESULT=$(cat query_result.json)" >> $GITHUB_ENV
       env:
+        RUN: query
         GITHUB_TOKEN: ${{ inputs.github_token }}
         REPO_OWNER: ${{ inputs.repo_owner }}
         REPO_NAME: ${{ inputs.repo_name }}
@@ -87,8 +88,9 @@ runs:
     - name: Evaluate results
       shell: bash
       run: |
-        python ./actions/sec/gate/evaluate_results.py
+        python ./actions/sec/gate/gate.py
       env:
+        RUN: evaluate
         QUERY_RESULT: ${{ env.QUERY_RESULT }}
         GATING_POLICY: ${{ inputs.policy_json }}
         GATING_ACTIVE: ${{ inputs.gating_active }}
