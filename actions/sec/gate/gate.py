@@ -40,37 +40,30 @@ def evaluate_results(api_call_result: dict,
     for vulnerability in api_call_result:
         # Retrieve grace period according to the finding's severity
         severity = vulnerability['rule']['security_severity_level']
-        try:
+        if severity in gating_policy and 'grace_period' in gating_policy[severity]
             grace_period_days = gating_policy[severity]['grace_period']
-        except KeyError:
+        else:
             print(f'Gating policy must be specified for all severities requested for scan')
             exit(5)
 
-        # Calculate date of grace period 
-        datetime_first_seen = datetime.strptime(vulnerability['created_at'][:10], r'%Y-%m-%d')
+        vulnerability_found_in_reference_branch = use_reference_branch and 'number' in vulnerability and vulnerability['number'] in reference_alerts
+        datetime_first_seen_reference = datetime.strptime(reference_alerts[vulnerability['number']][:10], r'%Y-%m-%d') if vulnerability_found_in_reference_branch else False
+        created_at = datetime.strptime(vulnerability['created_at'][:10], r'%Y-%m-%d')
+        datetime_first_seen = datetime_first_seen_reference if vulnerability_found_in_reference_branch and datetime_first_seen_reference < created_at else created_at
 
-        if use_reference_branch:
-            try:
-                print_if('Checking for vulnerability in reference branch', not quiet_mode)
-                datetime_first_seen_reference = datetime.strptime(reference_alerts[vulnerability['number']][:10], r'%Y-%m-%d')
-                # Only use reference branch's "firstSeenDate" if it's older then target ref's
-                if datetime_first_seen_reference < datetime_first_seen:
-                    datetime_first_seen = datetime_first_seen_reference
-                print_if('Vulnerability found in reference branch', not quiet_mode)
-            except KeyError:
-                print('Vulnerability not found in reference branch. Proceeding evaluating grace period for given ref.')
+        msg = 'Vulnerability found in reference branch' if vulnerability_found_in_reference_branch else 'Vulnerability not found in reference branch. Proceeding evaluating grace period for given ref.'
+        print_if(msg, not quiet_mode)
 
         grace_period_end_date = (datetime_first_seen + timedelta(days=grace_period_days)).date()
 
-        # If vulnerability is in grace period
-        if date.today() <= grace_period_end_date:
+        vulnerability_out_of_grace_period = date.today() > grace_period_end_date
+        if not vulnerability_out_of_grace_period:
             vulnerabilities_within_grace_period[severity] = vulnerabilities_within_grace_period.get(severity, 0) + 1
             print_if(' '.join([
               f'Vulnerability with "{severity}" severity within grace period found!',
               f'End date is {grace_period_end_date} ({(grace_period_end_date - date.today()).days} days left).',
               'See details below or in "Security -> Code scanning"']), not quiet_mode)
             print_if(json.dumps(vulnerability, sort_keys=True, indent=4), not quiet_mode)
-        # If vulnerability is out of grace period
         else:
             vulnerabilities_out_of_grace_period[severity] = vulnerabilities_out_of_grace_period.get(severity, 0) + 1
             print_if(f'Vulnerability with "{severity}" severity out of grace period found! See details below or in "Security -> Code scanning"', not quiet_mode)
@@ -168,5 +161,4 @@ if __name__ == "__main__":
     if main not in mains:
         print(f'{main} should be one of {",".join(mains.keys())}.')
         exit(127)
-    print(f'Executing {function2name(mains[main])}')
     mains[main]()
