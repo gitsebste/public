@@ -72,18 +72,21 @@ def evaluate_results(api_call_result: dict,
     if vulnerabilities_within_grace_period != {}:  
         print(f'Vulnerabilities within grace period found: {vulnerabilities_within_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
 
-    if vulnerabilities_out_of_grace_period != {}:
-        for severity in vulnerabilities_out_of_grace_period:
-            if str2bool(gating_policy[severity]['blocking']):
-                print(f'Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
-                        f'{vulnerabilities_out_of_grace_period[severity]} {severity} vulnerabilities out of grace period found.',
-                        'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
-                fail_pipeline = True
-            else:
-                print(f'{vulnerabilities_out_of_grace_period[severity]} "{severity}" vulnerabilities out of grace period found.',
-                        'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
+    if vulnerabilities_out_of_grace_period == {}:
+        return
+
+    print(f'Vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
+                      
+    for severity in vulnerabilities_out_of_grace_period:
+        if str2bool(gating_policy[severity]['blocking']):
+            print(f'Policy evaluation failed for vulnerabilities of "{severity}" severity! ',
+                    f'{vulnerabilities_out_of_grace_period[severity]} {severity} vulnerabilities out of grace period found.',
+                    'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
+            fail_pipeline = True
         else:
-            print(f'Vulnerabilities out of grace period found: {vulnerabilities_out_of_grace_period}. See pipeline logs or "Security -> Code scanning" for details')
+            print(f'{vulnerabilities_out_of_grace_period[severity]} "{severity}" vulnerabilities out of grace period found.',
+                    'Go to "Security -> Code scanning" to evaluate the vulnerabilities identified', sep=' ')
+
     if gating_active and fail_pipeline:
       print('Policy-prohibited vulnerabilities were found')
       exit(302)
